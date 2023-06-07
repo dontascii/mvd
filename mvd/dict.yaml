@@ -1,0 +1,20 @@
+'1': !!set
+  '1': null
+  joel: null
+bar: !!set
+  foo: null
+blah: !!set
+  '4': null
+foo: !!set
+  '3': null
+  bar: null
+  bar3: null
+  baz: null
+ha: !!set
+  blah: null
+joel: !!set
+  '3': null
+  joel: null
+  me: null
+this: !!set
+  works: null
