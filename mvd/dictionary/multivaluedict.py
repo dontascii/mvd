@@ -5,7 +5,7 @@ from typing import TypeVar, Dict, Set, Generic
 import logging
 
 T = TypeVar("T")
-V = TypeVar("V",set,str)
+V = TypeVar("V", set, str)
 
 
 

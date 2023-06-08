@@ -2,7 +2,7 @@
 mvd (an acronym for "multi-value dictionary") is an interactive command-line tool that stores a multivalue dictionary in memory. All keys and members are strings.
 
 ## Requirements:
-* should be an interactive console application 
+* interactive console application 
 * a dictionary (map) of unordered collections class
 * keys are strings
 * values are an unordered collection of strings  
@@ -29,24 +29,9 @@ pip3 install git+https://github.com/dontascii/mvd
 Make sure your pip installation is current, otherwise pip install might fail. 
 ___
 Alternatively, you can clone the repository to a location of your choosing, 
-`cd` to that location, and install: 
+`cd` to that location, and install with `pip3 install` .
 
-#### Cloning the repository
-there are several ways to clone the repo: 
-* using the `gh command-line tool from github: 
-```
-gh repo clone <url> 
-```
-* using ``git clone``:`
-```
-git clone <url>
-```
-#### Install
-make sure you are in the root directory where the repo was cloned and then: 
-```
-pip3 install . 
-```
-___
+
 You might want to create a Virtual Environment and install it there. If you do that, 
 you will have to activate the virtual env in order for the `mvd` command to be available.  
 
@@ -73,7 +58,7 @@ Commands are lazy loaded at run-time and the app can easily be extended with new
 The commands that are available in the interactive cli are the same commands available as sub-commands directly from the terminal. No code changes are necessary outside of the commands folder to add a command. The help prompt for each command is generated from the docstring of the cli function defined in the cmd_*.py file. In the interactive cli, `HELP <CMD>` contents use the `short_help` parameter,  passed in the @click.command decorator. See the existing commands to see how this works.  
 
 #### --dict-file option (-d)
-The `-d` or `--dict-file` option on the mvd command allows the dictionary to be persisted to disk. The dictionary can be loaded from a file and saved to the file using this option. This can be used with the interactive CLI or when running commands directly from your terminal. In fact, if you run a command directly from the terminal without using the `--dict-file` option, a warning is displayed.  
+The `-d` or `--dict-file` option on the mvd command allows the dictionary to be persisted to disk. The dictionary can be loaded from, and saved to, a file using this option. This can be used with the interactive CLI or when running commands directly from your terminal. In fact, if you run a command directly from the terminal without using the `--dict-file` option, a warning is displayed.  
 
 ```
 mvd add foo bar

@@ -49,7 +49,7 @@ def cli(ctx, context: click.Context, verbose, dict_file):
             'cli'] and '--help' not in context.args:
             ctx.log("Warning: no dict_file set. The dictionary will be " +
                     "destroyed after this command completes. \n" +
-                    "Use '-d <file>' option to persist dictionary to a file.")
+                    "Use '-d <file>' option to persist dictionary to a file.\n")
     if dict_file is not None:
         ctx.dict_file = dict_file
         if os.path.exists(dict_file):
