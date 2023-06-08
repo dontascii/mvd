@@ -1,7 +1,7 @@
 import rich_click as click
 
 from mvd.main import pass_environment
-from mvd.dictionary.multivaluedict import KeyMissingException, ValueExistsException
+from mvd.dictionary.multivaluedict import ValueExistsException
 
 
 @click.command(name="add", short_help="Adds a member for a given key.")
@@ -15,7 +15,7 @@ def cli(ctx, key, value):
     If the key does not exist, it will be created automatically.
     If the value already exists, a ValueExistsException will be thrown.
     """
-    if key is None or value is None:
+    if not key or not value:
         print("Error: Missing one or more required parameter(s).")
         return "Error: Missing one or more required parameter(s)."
     try:

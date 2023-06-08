@@ -14,9 +14,9 @@ import rich_click as click
 from mvd.commands.command_service import CommandService
 
 
-class AbstractInputParser(ABC):
+class Parsable(ABC):
     """
-    abstract class for parsing keyboard input
+    parse keyboard input
     """
 
     def __init__(self):
@@ -35,7 +35,7 @@ class AbstractInputParser(ABC):
         pass
 
 
-class AutoCompleteInputParser(AbstractInputParser):
+class AutoCompleteInputParser(Parsable):
     """InputParser with auto-completion and command history support"""
 
     def __init__(self, context: Union[click.Context, None] = None):
@@ -55,7 +55,6 @@ class AutoCompleteInputParser(AbstractInputParser):
             Defaults to True.
         """
         if back:
-            # if the up arrow was pressed
             if self.back_cnt < len(self.command_history):
                 # if we have commands still in the buffer
                 command = self.command_history.popleft()
@@ -67,7 +66,6 @@ class AutoCompleteInputParser(AbstractInputParser):
                 self.user_input = command
                 # and set the user_input
         elif self.back_cnt > 0:
-            # else if the down arrow was pressed
             # pop the command at the end of the buffer
             command = self.command_history.pop()
             # and add it to the front 
@@ -77,8 +75,6 @@ class AutoCompleteInputParser(AbstractInputParser):
             # set the user_input
             self.user_input = command
         else:
-            # if the up arrow was pressed and our counter
-            # is less than 0, clear the input and reset the counter
             self.user_input = ""
             self.back_cnt = 0
 
@@ -109,10 +105,6 @@ class AutoCompleteInputParser(AbstractInputParser):
     def auto_complete(self) -> None:
         pass
 
-    @abstractmethod
-    def parse_input(self) -> None:
-        pass
-
 
 class InteractiveCli(AutoCompleteInputParser):
     """
@@ -123,6 +115,7 @@ class InteractiveCli(AutoCompleteInputParser):
 
     def __init__(self, context: Union[click.Context, None] = None) -> None:
         super().__init__(context)
+
         self.__term: blessed.Terminal = blessed.Terminal()
         self.__running: bool = False
         self.__out: str = ""
@@ -221,7 +214,7 @@ class InteractiveCli(AutoCompleteInputParser):
     def parse_input(self) -> None:
         """
         the implementation of the parse_input abstract method 
-        from the AbstractInputParser base class 
+        from the Parsable base class
         """
         params = self.user_input.split(' ')
         self.__out += f"\n>>>{self.user_input}\n"
@@ -234,8 +227,10 @@ class InteractiveCli(AutoCompleteInputParser):
             self.__out += self.command_service.render_help(params, self.context)
             return
         elif params[0] in self.command_service.command_list:
-            self.__out += self.command_service.invoke_command_with_context(
+            result = self.command_service.invoke_command_with_context(
                 params, self.context)
+            if result is not None:
+                self.__out += result 
 
     def start(self) -> None:
         """

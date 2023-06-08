@@ -58,6 +58,7 @@ class CommandService:
         cmd_command.allow_extra_args = True
         cmd_context = cmd_command. \
             make_context(params[0], params[1:], context.parent)
-        result =  cmd_command.invoke(cmd_context)
+        with cmd_context:
+            result =  cmd_command.invoke(cmd_context)
         return result
            
