@@ -3,7 +3,7 @@ mvd (an acronym for "multi-value dictionary") is an interactive command-line too
 
 ## Requirements:
 * interactive console application 
-* a dictionary (map) of unordered collections class
+* a dictionary of unordered collections
 * keys are strings
 * values are an unordered collection of strings  
 * should implement the commands in the work_sample_final.pdf
