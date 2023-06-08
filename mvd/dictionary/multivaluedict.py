@@ -1,5 +1,8 @@
 """
-
+multivaluedict.py
+author: dontascii
+email: dontascii@duck.com
+copyright 2023 - Joel Clegg
 """
 from typing import TypeVar, Dict, Set, Generic
 import logging
