@@ -21,6 +21,9 @@ class Parsable(ABC):
 
     def __init__(self):
         self.__user_input: str = ""
+        self.command_history = deque()
+        self.back_cnt: int = 0
+        self.__term: blessed.Terminal = blessed.Terminal()
 
     @property
     def user_input(self) -> str:
@@ -30,28 +33,40 @@ class Parsable(ABC):
     def user_input(self, value: str) -> None:
         self.__user_input = value
 
+    @property
+    def terminal(self) -> blessed.Terminal:
+        """
+        getter that incapsulates the private __term attribute
+        """
+        return self.__term
+
+    @terminal.setter
+    def terminal(self, value: blessed.Terminal) -> None:
+        """
+        the setter that encapsulates the private __term attribute
+        """
+        self.__term: blessed.Terminal = value
+
     @abstractmethod
     def parse_input(self) -> None:
         pass
 
 
-class AutoCompleteInputParser(Parsable):
-    """InputParser with auto-completion and command history support"""
-
-    def __init__(self, context: Union[click.Context, None] = None):
+class HistoricalInputParser(Parsable):
+    def __init__(self):
         super().__init__()
-        self.context = context
-        self.command_service: CommandService = CommandService()
-        self.command_history = deque()
-        self.back_cnt: int = 0
+
+    @abstractmethod
+    def auto_complete(self) -> None:
+        pass
 
     def navigate_history(self, back: bool = True) -> None:
         """this callback is fired when the user presses the up/down
-        arrows and populates the input with the next command in the 
-        history buffer. 
+        arrows and populates the input with the next command in the
+        history buffer.
 
         Args:
-            back (bool, optional): Navigating backwards. (up arrow pressed) 
+            back (bool, optional): Navigating backwards. (up arrow pressed)
             Defaults to True.
         """
         if back:
@@ -68,7 +83,7 @@ class AutoCompleteInputParser(Parsable):
         elif self.back_cnt > 0:
             # pop the command at the end of the buffer
             command = self.command_history.pop()
-            # and add it to the front 
+            # and add it to the front
             self.command_history.appendleft(command)
             # decrement our counter
             self.back_cnt -= 1
@@ -77,6 +92,15 @@ class AutoCompleteInputParser(Parsable):
         else:
             self.user_input = ""
             self.back_cnt = 0
+
+
+class AutoCompleteInputParser(Parsable):
+    """InputParser with auto-completion"""
+
+    def __init__(self, context: Union[click.Context, None] = None):
+        super().__init__()
+        self.context = context
+        self.command_service: CommandService = CommandService()
 
     def fill_auto_complete(self) -> None:
         """
@@ -106,7 +130,7 @@ class AutoCompleteInputParser(Parsable):
         pass
 
 
-class InteractiveCli(AutoCompleteInputParser):
+class InteractiveCli(AutoCompleteInputParser, HistoricalInputParser):
     """
     This class drives the interactive command-line interface. It handles
     parsing user input, command history, auto-complete
@@ -116,23 +140,11 @@ class InteractiveCli(AutoCompleteInputParser):
     def __init__(self, context: Union[click.Context, None] = None) -> None:
         super().__init__(context)
 
-        self.__term: blessed.Terminal = blessed.Terminal()
+
         self.__running: bool = False
         self.__out: str = ""
 
-    @property
-    def terminal(self) -> blessed.Terminal:
-        """
-        getter that incapsulates the private __term attribute
-        """
-        return self.__term
 
-    @terminal.setter
-    def terminal(self, value: blessed.Terminal) -> None:
-        """
-        the setter that encapsulates the private __term attribute
-        """
-        self.__term: blessed.Terminal = value
 
     @property
     def running(self) -> bool:
@@ -168,7 +180,6 @@ class InteractiveCli(AutoCompleteInputParser):
                               "type `HELP {COMMAND}` and press ENTER.",
                               "to quit, press the escape key or QUIT"]
         return '\n'.join(results)
-
 
     def auto_complete(self) -> None:
         """
@@ -230,7 +241,7 @@ class InteractiveCli(AutoCompleteInputParser):
             result = self.command_service.invoke_command_with_context(
                 params, self.context)
             if result is not None:
-                self.__out += result 
+                self.__out += result
 
     def start(self) -> None:
         """
